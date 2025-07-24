@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initalState = {
+const initialState = {
     watchlist: [],
     selectedPortfolio: null,
 };
@@ -34,4 +34,4 @@ export const{
     resetWatchlist,
 } = portfolioSlice.actions;
 
-export default portfolioSlice.reducers;
+export default portfolioSlice.reducer;

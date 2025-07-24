@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import func
 from extensions import db
 from models.models import Portfolio, Transaction, Asset
-from services.analytics import get_sector_breakdown
+from services.analytics import get_sector_breakdown, calculate_portfolio_metrics
 
 portfolio_bp = Blueprint('portfolio_bp', __name__)
 
@@ -71,7 +71,7 @@ def upload_transactions(portfolio_id):
     reader = csv.DictReader(stream)
 
     for row in reader:
-        ticker = row['ticker'].strip().upper()  # ✅ Fixed typo
+        ticker = row['ticker'].strip().upper()
         name = row['name'].strip()
         sector = row['sector'].strip()
         quantity = float(row['quantity'])
@@ -81,7 +81,7 @@ def upload_transactions(portfolio_id):
         # Get or create asset with full info
         asset = Asset.query.filter_by(ticker=ticker).first()
         if not asset:
-            asset = Asset(ticker=ticker, name=name, sector=sector)  # ✅ Add name + sector
+            asset = Asset(ticker=ticker, name=name, sector=sector)
             db.session.add(asset)
             db.session.commit()
         
@@ -130,5 +130,14 @@ def get_portfolio_transactions(portfolio_id):
             for tx, asset in transactions
         ]
         return jsonify({"portfolio_id": portfolio_id, "transactions": result})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@portfolio_bp.route('/<int:portfolio_id>/metrics', methods=['GET'])
+def get_portfolio_metrics(portfolio_id):
+    try:
+        metrics = calculate_portfolio_metrics(portfolio_id)
+        return jsonify(metrics)
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -4,6 +4,7 @@ import SectorPieChart from '../components/SectorPieChart';
 import PortfolioGrowthChart from '../components/PortfolioGrowthChart';
 import TransactionTable from '../components/TransactionTable';
 import CSVUpload from '../components/CSVUpload';
+import PortfolioPerformance from '../components/PortfolioPerformance.jsx';
 
 function DashboardPage() {
   const { id: portfolioId } = useParams();
@@ -23,6 +24,7 @@ function DashboardPage() {
 
       <CSVUpload portfolioId={portfolioId} />
       <SectorPieChart portfolioId={portfolioId} />
+      <PortfolioPerformance portfolioId={portfolioId} />
       <PortfolioGrowthChart portfolioId={portfolioId} />
       <TransactionTable portfolioId={portfolioId} />
     </div>

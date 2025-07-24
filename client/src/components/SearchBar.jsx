@@ -1,35 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    addToWatchList,
+    removeFromWatchlist,
+} from '../redux/portfolioSlice'; // update this import path based on your structure
 import AssetCard from './AssetCard';
 
 const SearchBar = () => {
     const [ticker, setTicker] = useState('');
-    const [watchlist, setWatchlist] = useState([]);
-
-    // Load from localaStorage
-    useEffect(() => {
-        const stored = localStorage.getItem('watchlist');
-        if(stored) {
-            setWatchlist(JSON.parse(stored));
-        }
-    }, []);
-
-    // Persist to localStorage
-    useEffect(() => {
-        localStorage.setItem('watchlist', JSON.stringify(watchlist));
-    }, [watchlist]);
+    const dispatch = useDispatch();
+    const watchlist = useSelector((state) => state.portfolio.watchlist); // assuming 'portfolio' is the slice name
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const formatted = ticker.trim().toUpperCase();
-        if(!formatted || watchlist.includes(formatted)) return;
-        setWatchlist((prev) => [...prev, formatted]);      
+        if (!formatted || watchlist.includes(formatted)) return;
+        dispatch(addToWatchList(formatted));
         setTicker('');
     };
 
     const handleRemove = (symbol) => {
-        const updated = watchlist.filter((item) => item !== symbol);
-        setWatchlist(updated);
-    }
+        dispatch(removeFromWatchlist(symbol));
+    };
 
     return (
         <div className="flex flex-col items-center gap-6 mt-10 w-full max-w-2xl">
@@ -57,14 +49,14 @@ const SearchBar = () => {
                             onClick={() => handleRemove(symbol)}
                             className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 text-xs hover:bg-red-600"
                             title="remove from watchlist"
-                    >
-                        ❌
-                    </button>
+                        >
+                            ❌
+                        </button>
                     </div>
                 ))}
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default SearchBar;
