@@ -1,4 +1,4 @@
-from server.app import db
+from extensions import db
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -23,8 +23,8 @@ class Asset(db.Model):
 class Transaction(db.Model):
     __tablename__ = 'transactions'
     id = db.Column(db.Integer, primary_key=True)
-    portfolio_id = db.Column(db.integer, db.ForeignKey('portfolios.id'), nullable=False)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolios.id'), nullable=False)
     asset_id = db.Column(db.Integer, db.ForeignKey('assets.id'), nullable=False)
-    quantity = db.COlumn(db.Float, nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
     price = db.Column(db.Float, nullable=False)
-    date = db.COlumn(db.Date, nullable=False)
+    date = db.Column(db.Date, nullable=False)

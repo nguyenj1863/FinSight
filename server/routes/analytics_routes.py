@@ -1,7 +1,7 @@
-from flask import Blueprint
+from flask import Blueprint, request, jsonify
 
 
-analytics_bp = Blueprint('analytics', __name__)
+analytics_bp = Blueprint('analytics_bp', __name__)
 
 @analytics_bp.route('/api/analytics')
 def home():

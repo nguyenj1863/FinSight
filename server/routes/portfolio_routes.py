@@ -1,8 +1,10 @@
 from flask import Blueprint, request, jsonify
-from models.models import db, Portfolio, Transaction, Asset
+from models.models import Portfolio, Transaction, Asset
+from extensions import db
 
 portfolio_bp = Blueprint('portfolio_bp', __name__)
 
+# Returns all Portfolios
 @portfolio_bp.route('/', methods=['GET'])
 def get_all_portfolios():
     portfolios = Portfolio.query.all()
@@ -11,6 +13,7 @@ def get_all_portfolios():
         result.append({"id": p.id, "name": p.name, "user_id": p.user_id})
     return jsonify(result)
 
+# Creates a Portfolio
 @portfolio_bp.route('/create', methods=['POST'])
 def create_portfolio():
     data = request.get_json()
@@ -25,6 +28,7 @@ def create_portfolio():
     db.session.commit()
     return jsonify({"message": "Portfolio created", "id": new_portfolio.id})
 
+# Adds an Asset to a Portfolio
 @portfolio_bp.route('/<int:portfolio_id>/add_asset', methods=['POST'])
 def add_asset_to_portfolio(portfolio_id):
     data = request.get_json()

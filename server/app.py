@@ -1,18 +1,16 @@
 from flask import Flask
 from flask_cors import CORS
-from app.routes.analytics_routes import analytics_bp
-from app.routes.asset_routes import asset_bp
-from app.routes.portfolio_routes import portfolio_bp
-from flask_sqlalchemy import SQLAlchemy
+from routes.analytics_routes import analytics_bp
+from routes.asset_routes import asset_bp
+from routes.portfolio_routes import portfolio_bp
+from extensions import db
 import os
-
-db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
     CORS(app)
 
-    app.config['SQLACHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///finsight.db")
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", "sqlite:///finsight.db")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
