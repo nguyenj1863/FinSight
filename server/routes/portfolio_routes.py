@@ -1,11 +1,14 @@
+import csv
 from flask import Blueprint, request, jsonify
 from models.models import Portfolio, Transaction, Asset
 from extensions import db
+from io import datetime
+from werkzeug.utils import secure_filename
 
 portfolio_bp = Blueprint('portfolio_bp', __name__)
 
 # Returns all Portfolios
-@portfolio_bp.route('/api/portfolio/', methods=['GET'])
+@portfolio_bp.route('/', methods=['GET'])
 def get_all_portfolios():
     portfolios = Portfolio.query.all()
     result = []
@@ -14,7 +17,7 @@ def get_all_portfolios():
     return jsonify(result)
 
 # Creates a Portfolio
-@portfolio_bp.route('/api/portfolio/create', methods=['POST'])
+@portfolio_bp.route('/create', methods=['POST'])
 def create_portfolio():
     data = request.get_json()
     name = data.get('name')
@@ -29,7 +32,7 @@ def create_portfolio():
     return jsonify({"message": "Portfolio created", "id": new_portfolio.id})
 
 # Adds an Asset to a Portfolio
-@portfolio_bp.route('/api/portfolio/<int:portfolio_id>/add_asset', methods=['POST'])
+@portfolio_bp.route('/<int:portfolio_id>/add_asset', methods=['POST'])
 def add_asset_to_portfolio(portfolio_id):
     data = request.get_json()
     ticker = data.get('ticker')
@@ -53,3 +56,39 @@ def add_asset_to_portfolio(portfolio_id):
     db.session.add(new_tx)
     db.session.commit()
     return jsonify({"message": "Asset added to portfolio"})
+
+# Upload CSV file
+@portfolio_bp.route('/<int:portfolio_id>/upload', methods=['POST'])
+def upload_transactions(portfolio_id):
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    
+    file = request.files['file']
+    stream = StringIO(file.stream.read().decode("UTF-8"), newline=None)
+    reader = csv.DictReader(stream)
+
+    for row in reader:
+        ticker = row['tickler'].strip().upper()
+        quantity = float(row['quantity'])
+        price = float(row['price'])
+        date = datetime.strptime(row['date'], '%Y-%m-%d').date()
+
+        # Get or create asset
+        asset = Asset.query.filter_by(ticker=ticker).first()
+        if not asset:
+            asset = Asset(ticker=ticker)
+            db.session.add(asset)
+            db.session.commit()
+        
+        # Create transaction
+        tx = Transaction(
+            portfolio_id=portfolio_id,
+            asset_id=asset.id,
+            quantity=quantity,
+            price=price,
+            date=date
+        )
+        db.session.add(tx)
+    
+    db.session.commit()
+    return jsonify({'message': 'Transactions imported successfully'})
