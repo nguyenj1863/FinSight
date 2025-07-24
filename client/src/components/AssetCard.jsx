@@ -1,4 +1,3 @@
-// src/components/AssetCard.jsx
 import React, { useEffect, useState } from 'react';
 
 const AssetCard = ({ ticker }) => {
