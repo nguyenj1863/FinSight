@@ -1,0 +1,17 @@
+{
+  "name": "finsight",
+  "version": "1.0.0",
+  "description": "FinSight is a full-stack application that simulates an institutional investment dashboard, helping users track, analyze, and optimize mock investment portfolios using real market data and predictive analytics",
+  "main": "index.js",
+  "scripts": {
+    "client": "npm start --prefix client",
+    "flask": "cd server && flask run",
+    "dev": "concurrently \"npm run flask\" \"npm run client\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^9.2.0"
+  }
+}

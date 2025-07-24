@@ -3,7 +3,7 @@ import yfinance as yf
 
 asset_bp = Blueprint('asset_bp', __name__)
 
-@asset_bp.route('/<string:ticker>', methods=['GET'])
+@asset_bp.route('/api/asset/<string:ticker>', methods=['GET'])
 def get_asset_data(ticker):
     try:
         stock = yf.Ticker(ticker)

@@ -5,7 +5,7 @@ from extensions import db
 portfolio_bp = Blueprint('portfolio_bp', __name__)
 
 # Returns all Portfolios
-@portfolio_bp.route('/', methods=['GET'])
+@portfolio_bp.route('/api/portfolio/', methods=['GET'])
 def get_all_portfolios():
     portfolios = Portfolio.query.all()
     result = []
@@ -14,7 +14,7 @@ def get_all_portfolios():
     return jsonify(result)
 
 # Creates a Portfolio
-@portfolio_bp.route('/create', methods=['POST'])
+@portfolio_bp.route('/api/portfolio/create', methods=['POST'])
 def create_portfolio():
     data = request.get_json()
     name = data.get('name')
@@ -29,7 +29,7 @@ def create_portfolio():
     return jsonify({"message": "Portfolio created", "id": new_portfolio.id})
 
 # Adds an Asset to a Portfolio
-@portfolio_bp.route('/<int:portfolio_id>/add_asset', methods=['POST'])
+@portfolio_bp.route('/api/portfolio/<int:portfolio_id>/add_asset', methods=['POST'])
 def add_asset_to_portfolio(portfolio_id):
     data = request.get_json()
     ticker = data.get('ticker')
