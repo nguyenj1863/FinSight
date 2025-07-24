@@ -1,5 +1,6 @@
 from sqlalchemy import func
-from models.models import Porfolio, Transaction, Asset
+from models.models import Portfolio, Transaction, Asset
+from extensions import db
 
 def get_sector_breakdown(portfolio_id):
     results = (

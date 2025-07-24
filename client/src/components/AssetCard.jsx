@@ -9,7 +9,7 @@ const AssetCard = ({ ticker }) => {
     if (!ticker) return;
 
     setLoading(true);
-    fetch(`http://localhost:5000/api/asset/${ticker}`)
+    fetch(`http://localhost:5000/api/assets/${ticker}`)
       .then(res => res.json())
       .then(data => {
         if (data.error) throw new Error(data.error);

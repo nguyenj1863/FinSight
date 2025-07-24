@@ -71,15 +71,17 @@ def upload_transactions(portfolio_id):
     reader = csv.DictReader(stream)
 
     for row in reader:
-        ticker = row['tickler'].strip().upper()
+        ticker = row['ticker'].strip().upper()  # ✅ Fixed typo
+        name = row['name'].strip()
+        sector = row['sector'].strip()
         quantity = float(row['quantity'])
         price = float(row['price'])
         date = datetime.strptime(row['date'], '%Y-%m-%d').date()
 
-        # Get or create asset
+        # Get or create asset with full info
         asset = Asset.query.filter_by(ticker=ticker).first()
         if not asset:
-            asset = Asset(ticker=ticker)
+            asset = Asset(ticker=ticker, name=name, sector=sector)  # ✅ Add name + sector
             db.session.add(asset)
             db.session.commit()
         

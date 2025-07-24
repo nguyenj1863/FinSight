@@ -1,11 +1,16 @@
 import React from 'react';
-import SearchBar from './components/SearchBar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import SearchPage from './pages/SearchPage';
+import DashboardPage from './pages/DashboardPage';
 
 function App() {
   return (
-    <div className="min-h screen bg-gray-100 flex items-start justify-center pt-12">
-      <SearchBar />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<SearchPage />} />
+        <Route path="/portfolio/:id" element={<DashboardPage />} />
+      </Routes>
+    </Router>
   );
 }
 
