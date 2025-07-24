@@ -1,10 +1,10 @@
 import React from 'react';
-import AssetCard from './components/AssetCard';
+import SearchBar from './components/SearchBar';
 
 function App() {
   return (
-    <div className="flex justify-center mt-10">
-      <AssetCard ticker="AAPL" />
+    <div className="min-h screen bg-gray-100 flex items-start justify-center pt-12">
+      <SearchBar />
     </div>
   );
 }
