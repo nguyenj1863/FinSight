@@ -1,9 +1,12 @@
 import csv
 from flask import Blueprint, request, jsonify
-from models.models import Portfolio, Transaction, Asset
-from extensions import db
-from io import datetime
+from io import StringIO
+from datetime import datetime
 from werkzeug.utils import secure_filename
+from sqlalchemy import func
+from extensions import db
+from models.models import Portfolio, Transaction, Asset
+from services.analytics import get_sector_breakdown
 
 portfolio_bp = Blueprint('portfolio_bp', __name__)
 
@@ -92,3 +95,38 @@ def upload_transactions(portfolio_id):
     
     db.session.commit()
     return jsonify({'message': 'Transactions imported successfully'})
+
+# Breakdown of portfolio
+@portfolio_bp.route('/<int:portfolio_id>/breakdown', methods=['GET'])
+def get_sector_allocation(portfolio_id):
+    try:
+        data = get_sector_breakdown(portfolio_id)
+        return jsonify({"portfolio_id": portfolio_id, "sector_allocation": data})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Returns all transactions in a porfolio
+@portfolio_bp.route('/<int:portfolio_id>/transactions', methods=['GET'])
+def get_portfolio_transactions(portfolio_id):
+    try:
+        transactions = (
+            db.session.query(Transaction, Asset)
+            .join(Asset, Transaction.asset_id == Asset.id)
+            .filter(Transaction.portfolio_id == portfolio_id)
+            .all()
+        )
+
+        result = [
+            {
+                "ticker": asset.ticker,
+                "name": asset.name,
+                "sector": asset.sector,
+                "quantity": float(tx.quantity),
+                "price": float(tx.price),
+                "date": tx.date.strftime('%Y-%m-%d')
+            }
+            for tx, asset in transactions
+        ]
+        return jsonify({"portfolio_id": portfolio_id, "transactions": result})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
